@@ -1,0 +1,4 @@
+Pillow
+altair
+pandas
+string
