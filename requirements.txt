@@ -1,5 +1,4 @@
 Pillow
 altair
 pandas
-streamlit
-lxml
+streamlib
