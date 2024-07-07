@@ -4,8 +4,8 @@ import altair as alt
 from string import ascii_uppercase as alphabet
 from PIL import Image
 
-# image = Image.open('fifa.jpg')
-# st.image(image, use_column_width= True)
+image = Image.open('fifa.jpg')
+st.image(image, use_column_width= True)
 st.title('2022 FIFA World Cup QATAR Group Stage')
 st.write("""
     this app fetches the data of the group stages of 2022 FIFA QATAR World Cup
