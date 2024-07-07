@@ -4,18 +4,18 @@ import altair as alt
 from string import ascii_uppercase as alphabet
 from PIL import Image
 
-image = Image.open('fifa.jpg')
-st.image(image, use_column_width= True)
+# image = Image.open('fifa.jpg')
+# st.image(image, use_column_width= True)
 st.title('2022 FIFA World Cup QATAR Group Stage')
 st.write("""
     this app fetches the data of the group stages of 2022 FIFA QATAR World Cup
-    \nthe data used in this is app scraped from [Wikipedia](https://en.wikipedia.org/wiki/2022_FIFA_World_Cup) and from [Si.com](https://www.si.com/soccer/liverpool/news/fifa-world-cup-2022-top-scorers-golden-boot-race#gid=ci02b0d1a1f00025f0&pid=cristiano-ronaldo)
+    \nthe data used in this is app scraped from [Wikipedia](https://en.wikipedia.org/wiki/2022_FIFA_World_Cup)
     \n* **Python libraries:** streamlit, pandas, string, PIL, base64, altair
     \n***
 """)
 
 url = pd.read_html('https://en.wikipedia.org/wiki/2022_FIFA_World_Cup')
-url2 = pd.read_html('https://www.si.com/soccer/liverpool/news/fifa-world-cup-2022-top-scorers-golden-boot-race#gid=ci02b0d1a1f00025f0&pid=harry-kane')
+goals = pd.read_csv('goals.csv')
 dict_group = {}
 dict_goals = {}
 for letter, i in zip(alphabet, range(9, 65, 7)):
@@ -24,14 +24,9 @@ for letter, i in zip(alphabet, range(9, 65, 7)):
     df.pop('Qualification')
     dict_group[f"Group {letter}"] = df
 
-goals = url2[0]
+
 show_goal = False
-for i in goals['Team'].unique():
-    k = 0
-    for j in goals['Team']:
-        if i == j:
-            k += 1
-            dict_goals[i] = k
+
 if st.sidebar.checkbox('Show top scorers'):
     show_goal = True
 st.sidebar.title('Search a specific team')
@@ -46,7 +41,7 @@ if selected_team and show_goal == False:
             found = True
             df = dict_group[f"Group {letter}"]
             res = "no"
-            if( df.set_index('Team').loc[selected_team, "Pos"] == 1 or  df.set_index('Team').loc[selected_team, "Pos"] == 2):
+            if( df.set_index('Team').loc[selected_team, "Pos"] == 1 or df.set_index('Team').loc[selected_team, "Pos"] == 2):
                 res="yes"
             st.subheader(f'_Group: {letter}')
             st.subheader(f'-Qualified: {res}')
@@ -71,22 +66,20 @@ elif show_goal == False:
         st.dataframe(dict_group[key])
         st.write("***")
 else:
+    all_goals = pd.read_csv('all_goals.csv')
     st.subheader('Top Goal Scorers')
     st.dataframe(goals)
     st.write("***")
-    st.subheader('Bar Chart of top goal-scorers per team: ')
+    st.subheader('Bar Chart of goal-scorers per team(goals > 1): ')
     #parsing dict to dataframe to pass to altair
-    data_goals = pd.DataFrame.from_dict(dict_goals, orient="index")
-    data_goals = data_goals.rename({0: 'Players'}, axis = 'columns')
-    data_goals.reset_index(inplace=True)
-    data_goals = data_goals.rename(columns = {'index': 'Team'})
-    f = alt.Chart(data_goals).mark_bar().encode(
-        x = "Players",
-        y = "Team"
+    player_count = all_goals['team'].value_counts().reset_index()
+    player_count.columns = ['team', 'count']
+    f = alt.Chart(player_count).mark_bar().encode(
+        x = "team",
+        y = 'count'
     )
 
     f = f.properties(
         width = alt.Step(75)
     )
     st.write(f)
-    
