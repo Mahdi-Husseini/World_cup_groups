@@ -18,7 +18,7 @@ url = pd.read_html('https://en.wikipedia.org/wiki/2022_FIFA_World_Cup')
 goals = pd.read_csv('goals.csv')
 dict_group = {}
 dict_goals = {}
-for letter, i in zip(alphabet, range(9, 65, 7)):
+for letter, i in zip(alphabet, range(18, 73, 7)):
     df = url[i]
     df.rename(columns={df.columns[1]: 'Team'}, inplace=True)
     df.pop('Qualification')
